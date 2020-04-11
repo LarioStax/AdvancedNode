@@ -73,9 +73,20 @@ mongo.connect(process.env.DATABASE, function(err, db) {
 
 		app.get("/profile", ensureAuthenticated, function (req, res) {
 			// res.render("pug/profile.pug", {username: req.user.username}); //@@@@ why doesn't this work?!
-			res.render(process.cwd()+ "views/pug/profile", {username: req.user.username});
+			res.render(process.cwd() + "views/pug/profile", {username: req.user.username});
 			// res.render(process.cwd() + '/views/pug/profile' + {username: req.user.username}); //THIS ALSO WORKS   
 		});
+
+		app.get("/logout", function(req, res) {
+			req.logout(); //handled by passport!
+			res.redirect("/");
+		})
+
+		app.use( function(req, res, next) {
+			res.status(404)
+				.type("text")
+				.send("Not found!");
+		})
 
 		let port = process.env.PORT || 3000;
 		app.listen(port, () => {
