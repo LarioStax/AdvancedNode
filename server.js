@@ -64,12 +64,16 @@ mongo.connect(process.env.DATABASE, function(err, db) {
 
 		app.route('/')
 		  .get((req, res) => {
-		    res.render("pug/index.pug", {title: "Hello", message: "Please login", showLogin: true});
+		    res.render("pug/index.pug", {title: "Hello", message: "Please login", showLogin: true, title: "Home Page"}); //title Home Page required to pass fcc tests.....
 		  });
 
 		app.post("/login", passport.authenticate("local", {failureRedirect: "/"}), function(req, res) {
 			res.render("pug/profile.pug");
 		})
+
+		app.get("/profile", ensureAuthenticated, function (req, res) {
+			res.render("pug/profile.pug");
+		});
 
 		let port = process.env.PORT || 3000;
 		app.listen(port, () => {
@@ -77,3 +81,12 @@ mongo.connect(process.env.DATABASE, function(err, db) {
 		});
 	}
 });
+
+function ensureAuthenticated(req, res, next) {
+	if (req.isAuthenticated()) {
+		return next();
+	} else {
+		console.log("redireeeeect!");
+		res.redirect("/");
+	}
+}
