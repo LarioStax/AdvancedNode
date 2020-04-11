@@ -64,8 +64,12 @@ mongo.connect(process.env.DATABASE, function(err, db) {
 
 		app.route('/')
 		  .get((req, res) => {
-		    res.render("pug/index.pug", {title: "Hello", message: "Please login"});
+		    res.render("pug/index.pug", {title: "Hello", message: "Please login", showLogin: true});
 		  });
+
+		app.post("/login", passport.authenticate("local", {failureRedirect: "/"}), function(req, res) {
+			res.render("pug/profile.pug");
+		})
 
 		let port = process.env.PORT || 3000;
 		app.listen(port, () => {
