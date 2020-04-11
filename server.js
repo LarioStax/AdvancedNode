@@ -84,7 +84,7 @@ mongo.connect(process.env.DATABASE, function(err, db) {
 
 		app.route("/register")
 		.post(function(req, res, next) {
-			db.collection("users").remove({username: "freeCodeCampTester"}); //required to pass the fcc test..
+			db.collection("users").drop(); //required to pass the fcc test..
 			db.collection("users").findOne({username: req.body.username}, function(err, user) {
 				if (err) {
 					next(err);
