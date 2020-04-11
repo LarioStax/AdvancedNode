@@ -1,12 +1,13 @@
 'use strict';
 
-const express     = require('express');
-const bodyParser  = require('body-parser');
-const fccTesting  = require('./freeCodeCamp/fcctesting.js');
-const session 		= require("express-session");
-const passport 		= require("passport");
-const ObjectID    = require('mongodb').ObjectID;
-const mongo       = require('mongodb').MongoClient;
+const express     	= require('express');
+const bodyParser  	= require('body-parser');
+const fccTesting  	= require('./freeCodeCamp/fcctesting.js');
+const session 			= require("express-session");
+const passport 			= require("passport");
+const ObjectID    	= require('mongodb').ObjectID;
+const mongo       	= require('mongodb').MongoClient;
+const LocalStrategy = require("passport-local");
 
 
 const app = express();
@@ -44,6 +45,22 @@ mongo.connect(process.env.DATABASE, function(err, db) {
 				}
 			});
 		});
+
+		//AUTHENTICATION STRATEGY
+		passport.use(new LocalStrategy( function(username, password, done) {
+			db.collection("users").findOne({username: username }, function( err, user) {
+				console.log("User " + username + " attempted to log in.");
+				if (err) {
+					return done(err);
+				} else if (!user) {
+					return done(null, false);
+				} else if (password !== user.password) {
+					return done(null, false);
+				} else {
+					return done(null, user);
+				}
+			})
+		}))
 
 		app.route('/')
 		  .get((req, res) => {
