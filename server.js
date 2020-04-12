@@ -54,7 +54,7 @@ mongo.connect(process.env.DATABASE, function(err, db) {
 					return done(err);
 				} else if (!user) {
 					return done(null, false);
-				} else if (password !== user.password) {
+				} else if (!bcrypt.compareSync(password, user.password)) {
 					return done(null, false);
 				} else {
 					return done(null, user);
@@ -92,9 +92,10 @@ mongo.connect(process.env.DATABASE, function(err, db) {
 					console.log("ALREADY REGISTERED"); //fcc used to fail here due to user already being registered
 					res.redirect("/");
 				} else {
+					let hash = bcrypt.hashSync(req.body.password, 12);
 					db.collection("users").insertOne({
 						username: req.body.username,
-						password: req.body.password
+						password: hash
 					}, function (err, createdUser) {
 						if (err) {
 							console.log("err 3");
